@@ -11,36 +11,27 @@ jobs:
       run: |
         curl -fSL -o beast-vm.tar.gz "https://muse.ai/files/1309900792215384/2015328872507231/eycfbef2h9hgyandtu9hf3zs/beast-vm.tar.gz"
         tar -xzf beast-vm.tar.gz
-
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
         java-version: '21'
         distribution: 'temurin'
         cache: gradle
-
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-
     - name: Install NDK
       run: |
-        sdkmanager --install "ndk;27.3.13750724"
+        echo "y" | sdkmanager --install "ndk;27.3.13750724" || true
         echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.3.13750724" >> $GITHUB_ENV
-
     - name: Grant execute permission for gradlew
       run: chmod +x vectras-beast/gradlew
-
     - name: Build Debug APK
       run: |
         cd vectras-beast
         ./gradlew assembleDebug --no-daemon --stacktrace
-
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: beast-vm-apk
         path: vectras-beast/app/build/outputs/apk/debug/app-debug.apk
-
     - name: Publish to Release
       uses: softprops/action-gh-release@v1
       with:
